@@ -1,0 +1,47 @@
+name: Build Linux Packages for Kylin
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fakeroot dpkg python3 g++ make
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: ELECTRON=true npx vite build --outDir out
+
+      - name: Build Linux packages (x64 + arm64)
+        run: npx electron-builder --linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages-x64
+          path: dist-electron/*x64*
+
+      - name: Upload arm64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages-arm64
+          path: dist-electron/*arm64*

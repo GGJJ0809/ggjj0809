@@ -1,0 +1,102 @@
+# electron-builder 配置
+# 支持麒麟系统（Kylin OS）Linux x64 / arm64 打包
+
+appId: com.canteen.smartmanagement
+productName: 食堂智慧管理系统
+copyright: Copyright 2026
+
+# 使用国内镜像下载 Electron
+electronDownload:
+  mirror: https://cdn.npmmirror.com/binaries/electron/
+
+# 静态资源目录（Vite 构建输出）
+directories:
+  output: dist-electron
+  buildResources: build-resources
+
+# 需要打包进应用的文件
+files:
+  - electron/**/*
+  - out/**/*
+  - package.json
+
+# ─── ★ 关键修复：local-server.js 太大(9740行)，排除出 ASAR 避免被截断 ───
+# SyntaxError: Unexpected end of input 就是因为打包后文件不完整
+# electron-builder 26.x: asar 只能是 true/false/null，拆包用 asarUnpack
+asar: true
+asarUnpack:
+  - electron/local-server/index.js
+  - electron/local-server/mqtt-broker.js
+
+# ─── 额外的静态资源（不打包进 ASAR，放到 resources 目录）──────────────────
+# 如果启用 ffmpeg 捆绑，确保 ffmpeg-bin/ffmpeg 是 ELF 格式
+extraResources:
+  - from: ffmpeg-bin/
+    to: ffmpeg/
+    filter:
+      - ffmpeg
+  - from: node_modules/sql.js/dist/sql-wasm.wasm
+    to: sql-wasm.wasm
+  - from: .env
+    to: .
+
+extraMetadata:
+  main: electron/main.js
+  homepage: "https://canteen.local"
+
+# ─── Linux（麒麟系统）配置 ─────────────────────────────────────────────────
+linux:
+  target:
+    # AppImage：单文件，无需安装，麒麟系统直接双击运行
+    - target: AppImage
+      arch:
+        - x64
+        - arm64
+    # deb：适用于麒麟系统（基于 Debian/Ubuntu）的安装包
+    - target: deb
+      arch:
+        - x64
+        - arm64
+  category: Office
+  # 描述改为短 ASCII，避免 Kylin 安装器 Python 解析崩溃
+  description: Smart Canteen Management System
+  maintainer: IT Department <it@canteen.local>
+  # 启动器名称（ASCII，避免安装器解析中文崩溃）
+  executableName: smart-canteen
+
+# ─── deb 依赖声明 + 麒麟兼容性压缩 ──────────────────────────────────────────
+deb:
+  depends:
+    - ffmpeg
+  # 麒麟系统旧版 dpkg 对 xz 支持不稳定，改用 gz（gzip）压缩
+  compression: gz
+
+# ─── Windows 配置（备用，若需要在普通PC上跑）─────────────────────────────
+win:
+  target:
+    # 标准安装版：双击走安装向导
+    - target: nsis
+      arch:
+        - x64
+    # 绿色免安装单文件版：双击即用，无需安装
+    - target: portable
+      arch:
+        - x64
+  icon: build-resources/icon.ico
+
+# ─── 安装包配置 ───────────────────────────────────────────────────────────
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: 食堂智慧管理系统
+  artifactName: SmartCanteen-Setup-${version}.${ext}
+
+# ─── 免安装单文件版配置 ───────────────────────────────────────────────
+portable:
+  # Output filename kept ASCII to avoid garbled characters
+  artifactName: SmartCanteen-${version}-portable.${ext}
+
+# ─── 自动更新（内网环境下关闭）────────────────────────────────────────────
+publish: null
