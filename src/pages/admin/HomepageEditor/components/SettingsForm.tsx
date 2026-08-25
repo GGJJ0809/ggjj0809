@@ -1,3 +1,6 @@
+import EntityPicker from "./EntityPicker";
+import ImageUploader from "@/components/feature/ImageUploader";
+
 interface SettingsFormProps {
   section: { section_type: string; title: string; config: Record<string, any> };
   onChange: (config: Record<string, any>) => void;
@@ -170,7 +173,17 @@ export default function SettingsForm({ section, onChange, onTitleChange }: Setti
               <Btn active={config.layout === "list"} onClick={() => update("layout", "list")}>列表</Btn>
             </div>
           </Field>
-          <Field label="指定商品ID（逗号分隔，留空则自动取最新）"><input type="text" value={(config.productIds || []).join(",")} onChange={(e) => update("productIds", e.target.value.split(",").filter(Boolean).map(Number))} className="w-full px-3 py-2 rounded-lg border border-background-200/70 text-sm" placeholder="1,2,3" /></Field>
+          <Field label="选择课程（留空则自动取最新）">
+            <EntityPicker
+              table="courses"
+              titleField="title"
+              imageField="cover_image"
+              metaFormatter={(row) => (row.price ? `¥${row.price}` : "免费")}
+              value={config.productIds || []}
+              onChange={(ids) => update("productIds", ids)}
+              emptyHint="留空则自动取最新"
+            />
+          </Field>
         </div>
       )}
 
@@ -178,7 +191,16 @@ export default function SettingsForm({ section, onChange, onTitleChange }: Setti
       {section_type === "distribution_product" && (
         <div className="space-y-3">
           <Field label="显示数量"><input type="number" value={config.displayCount || 4} onChange={(e) => update("displayCount", Number(e.target.value))} className="w-full px-3 py-2 rounded-lg border border-background-200/70 text-sm" min={1} max={12} /></Field>
-          <Field label="商品ID（逗号分隔）"><input type="text" value={(config.productIds || []).join(",")} onChange={(e) => update("productIds", e.target.value.split(",").filter(Boolean).map(Number))} className="w-full px-3 py-2 rounded-lg border border-background-200/70 text-sm" placeholder="1,2,3" /></Field>
+          <Field label="选择商品">
+            <EntityPicker
+              table="product_items"
+              titleField="name"
+              metaFormatter={(row) => (row.price ? `¥${row.price}` : "")}
+              value={config.productIds || []}
+              onChange={(ids) => update("productIds", ids)}
+              emptyHint="选择要展示的商品"
+            />
+          </Field>
         </div>
       )}
 
@@ -226,7 +248,16 @@ export default function SettingsForm({ section, onChange, onTitleChange }: Setti
         <div className="space-y-3">
           <Field label="促销标题"><input type="text" value={config.title || ""} onChange={(e) => update("title", e.target.value)} className="w-full px-3 py-2 rounded-lg border border-background-200/70 text-sm" /></Field>
           <Field label="结束时间"><input type="datetime-local" value={config.endTime || ""} onChange={(e) => update("endTime", e.target.value)} className="w-full px-3 py-2 rounded-lg border border-background-200/70 text-sm" /></Field>
-          <Field label="商品ID（逗号分隔）"><input type="text" value={(config.products || []).join(",")} onChange={(e) => update("products", e.target.value.split(",").filter(Boolean).map(Number))} className="w-full px-3 py-2 rounded-lg border border-background-200/70 text-sm" /></Field>
+          <Field label="选择商品">
+            <EntityPicker
+              table="product_items"
+              titleField="name"
+              metaFormatter={(row) => (row.price ? `¥${row.price}` : "")}
+              value={config.products || []}
+              onChange={(ids) => update("products", ids)}
+              emptyHint="选择促销商品"
+            />
+          </Field>
           <div className="grid grid-cols-2 gap-2">
             <Field label="背景色"><input type="color" value={config.backgroundColor || "#ff6b35"} onChange={(e) => update("backgroundColor", e.target.value)} className="w-full h-9 rounded border border-background-200/70 cursor-pointer" /></Field>
             <div className="flex items-end"><label className="flex items-center gap-2 text-xs text-foreground-500"><input type="checkbox" checked={config.showCountdown !== false} onChange={(e) => update("showCountdown", e.target.checked)} className="rounded" />显示倒计时</label></div>
@@ -267,16 +298,5 @@ function Btn({ active, onClick, children }: { active: boolean; onClick: () => vo
 }
 
 function ImageUploadField({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-2">
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="flex-1 px-2 py-1.5 rounded border border-background-200/70 text-xs" placeholder={placeholder || "图片URL"} />
-      </div>
-      {value && (
-        <div className="w-full h-24 rounded-lg overflow-hidden bg-background-100 border border-background-200/70">
-          <img src={value} alt="preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-        </div>
-      )}
-    </div>
-  );
+  return <ImageUploader value={value} onChange={onChange} label="" placeholder={placeholder || "图片URL"} />;
 }

@@ -1,0 +1,102 @@
+export const emergencyEvents = [
+  {
+    id: 1,
+    level: "P0",
+    title: "刚果（金）东部武装冲突升级",
+    category: "安全事件",
+    location: "戈马 · 北基伍省",
+    time: "10:05",
+    status: "handling",
+    description: "戈马周边地区武装冲突加剧，当地 18 名外派员工及家属面临安全威胁，需立即启动撤离预案。",
+    timeline: [
+      { time: "10:05", title: "事件创建", detail: "监测到戈马地区冲突等级升至极高", type: "create" },
+      { time: "10:08", title: "风险研判", detail: "判定 P0 紧急事件，启动区域撤离预案", type: "update" },
+      { time: "10:15", title: "资源调度", detail: "就近匹配属地安保商及车辆资源", type: "dispatch" },
+      { time: "10:20", title: "派单执行", detail: "已联系 North Kivu Security 开展现场处置", type: "handle" },
+    ],
+    resources: [
+      { id: "r1", name: "North Kivu Security", type: "属地安保商", distance: "2.1km", eta: "6 分钟", dispatched: true },
+      { id: "r2", name: "应急撤离车队", type: "安保车辆", distance: "4.3km", eta: "12 分钟", dispatched: true },
+      { id: "r3", name: "医疗急救小组", type: "医疗保障", distance: "5.8km", eta: "16 分钟", dispatched: false },
+      { id: "r4", name: "使领馆联络员", type: "应急联络", distance: "—", eta: "随时", dispatched: false },
+    ],
+  },
+  {
+    id: 2,
+    level: "P0",
+    title: "外派员工失联超过 6 小时",
+    category: "人员告警",
+    location: "拉各斯 · 尼日利亚",
+    time: "10:42",
+    status: "handling",
+    description: "员工张伟最后一次定位出现在维多利亚岛，此后手机与定位设备均无信号，需紧急搜寻。",
+    timeline: [
+      { time: "04:30", title: "事件创建", detail: "系统检测到员工张伟失联超 6 小时", type: "create" },
+      { time: "04:45", title: "风险研判", detail: "判定 P0 紧急，启动失联搜寻预案", type: "update" },
+      { time: "05:00", title: "联系联系人", detail: "已联系家属及企业安全负责人", type: "handle" },
+    ],
+    resources: [
+      { id: "r1", name: "Lagos Secure Ltd", type: "属地安保商", distance: "3.2km", eta: "8 分钟", dispatched: false },
+      { id: "r2", name: "搜寻小组（2人）", type: "安保人员", distance: "5.1km", eta: "14 分钟", dispatched: false },
+      { id: "r3", name: "医疗急救", type: "医疗保障", distance: "6.8km", eta: "18 分钟", dispatched: false },
+    ],
+  },
+  {
+    id: 3,
+    level: "P1",
+    title: "海地太子港大规模示威游行",
+    category: "公共事件",
+    location: "太子港 · 海地",
+    time: "11:20",
+    status: "pending",
+    description: "太子港市中心爆发大规模示威，12 名项目员工需避险，已推送预警通知。",
+    timeline: [
+      { time: "11:20", title: "事件创建", detail: "监测到示威活动扩大至项目周边", type: "create" },
+      { time: "11:22", title: "预警推送", detail: "已向 12 名员工推送避险建议", type: "handle" },
+    ],
+    resources: [
+      { id: "r1", name: "Haiti Guard Service", type: "属地安保商", distance: "1.8km", eta: "5 分钟", dispatched: false },
+      { id: "r2", name: "应急车辆", type: "安保车辆", distance: "3.5km", eta: "10 分钟", dispatched: false },
+    ],
+  },
+  {
+    id: 4,
+    level: "P1",
+    title: "项目现场摄像头批量离线",
+    category: "设备异常",
+    location: "迪拜 · 阿联酋",
+    time: "12:05",
+    status: "pending",
+    description: "迪拜项目现场 6 路摄像头同时离线，疑似网络故障，需排查并恢复监控。",
+    timeline: [
+      { time: "12:05", title: "事件创建", detail: "监控到 6 路摄像头离线", type: "create" },
+    ],
+    resources: [
+      { id: "r1", name: "现场运维工程师", type: "技术支持", distance: "0.5km", eta: "3 分钟", dispatched: false },
+      { id: "r2", name: "网络运维小组", type: "技术支持", distance: "2.0km", eta: "8 分钟", dispatched: false },
+    ],
+  },
+  {
+    id: 5,
+    level: "P2",
+    title: "东南亚多国登革热疫情扩散",
+    category: "健康风险",
+    location: "曼谷 · 泰国",
+    time: "昨日 16:30",
+    status: "closed",
+    description: "东南亚多国登革热病例上升，已向相关地区员工发布健康防护提醒。",
+    timeline: [
+      { time: "16:30", title: "事件创建", detail: "监测到登革热疫情扩散趋势", type: "create" },
+      { time: "16:40", title: "健康提醒", detail: "已推送防护建议至 34 名员工", type: "handle" },
+      { time: "17:00", title: "事件关闭", detail: "处置完成，转为持续监测", type: "update" },
+    ],
+    resources: [],
+  },
+];
+
+export const resourceSummary = [
+  { id: 1, name: "可调用安保人员", value: "86", unit: "人", icon: "ri-team-line" },
+  { id: 2, name: "属地安保商", value: "214", unit: "家", icon: "ri-shield-check-line" },
+  { id: 3, name: "应急车辆", value: "43", unit: "辆", icon: "ri-car-line" },
+  { id: 4, name: "医疗急救点", value: "57", unit: "个", icon: "ri-heart-pulse-line" },
+];

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import ImageUploader from "@/components/feature/ImageUploader";
 
 interface ColumnRow {
   id: number;
@@ -412,12 +413,11 @@ export default function ColumnsAdmin() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-foreground-500 mb-1">封面图 URL</label>
-                <input
-                  type="text"
+                <label className="block text-xs font-medium text-foreground-500 mb-1">封面图片</label>
+                <ImageUploader
                   value={form.cover_image}
-                  onChange={(e) => setForm((f) => ({ ...f, cover_image: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg border border-background-200/70 bg-background-50 text-sm"
+                  onChange={(url) => setForm((f) => ({ ...f, cover_image: url }))}
+                  label=""
                   placeholder="https://..."
                 />
               </div>

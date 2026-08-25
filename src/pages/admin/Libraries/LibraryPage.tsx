@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, type ChangeEvent } from "react";
 import { supabase } from "@/lib/supabase";
 
 type LibType = "c" | "k" | "q" | "d";
@@ -90,10 +90,18 @@ const LIB_CONFIGS: Record<LibType, LibConfig> = {
         { value: "client_profile", label: "客户档案" }, { value: "sales_followup", label: "销售跟进" },
         { value: "consulting", label: "咨询" }, { value: "custom", label: "自定义" },
       ]},
+      { key: "content", label: "文档内容", type: "textarea", rows: 10, placeholder: "上传文档后自动读取，或手动粘贴模板说明..." },
       { key: "schema_data", label: "字段结构 (JSON Schema)", type: "json", placeholder: "{\"template_name\":\"...\",\"fields\":{...}}" },
       { key: "description", label: "描述", type: "text", placeholder: "模板描述" },
     ],
   },
+};
+
+const LIB_FOLDERS: Record<LibType, string> = {
+  c: "C库",
+  k: "K库",
+  q: "Q库",
+  d: "D库",
 };
 
 interface LibraryItem {
@@ -119,6 +127,8 @@ export default function LibraryPage({ type }: { type: LibType }) {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<Record<string, any>>({ status: "draft" });
   const [tagInput, setTagInput] = useState<Record<string, string>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadStatus, setUploadStatus] = useState("");
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -245,6 +255,34 @@ export default function LibraryPage({ type }: { type: LibType }) {
     } catch (e: any) {
       setError(e.message || "操作失败");
     }
+  };
+
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || "");
+      const name = file.name;
+      const isJson = /\.json$/i.test(name);
+      const updates: Record<string, any> = {
+        file_name: name,
+        file_path: `${LIB_FOLDERS[type]}/${name}`,
+      };
+      cfg.fields.forEach((f) => {
+        if (f.key === "content") updates.content = text;
+        if (f.type === "json" && isJson) updates[f.key] = text;
+      });
+      setFormData((prev) => ({ ...prev, ...updates }));
+      setUploadStatus(`已读取「${name}」，内容已自动填入`);
+      setTimeout(() => setUploadStatus(""), 4000);
+    };
+    reader.onerror = () => {
+      setUploadStatus("读取失败，请检查文件编码（建议 UTF-8）");
+      setTimeout(() => setUploadStatus(""), 4000);
+    };
+    reader.readAsText(file, "utf-8");
+    e.target.value = "";
   };
 
   const addTag = (fieldKey: string) => {
@@ -399,6 +437,33 @@ export default function LibraryPage({ type }: { type: LibType }) {
               <button onClick={() => setShowForm(false)} className="w-8 h-8 rounded-lg bg-background-100 hover:bg-background-200 flex items-center justify-center transition-colors">
                 <i className="ri-close-line text-foreground-600"></i>
               </button>
+            </div>
+
+            <div className="px-5 py-3 bg-background-100/40 border-b border-background-200">
+              <div className="flex items-center gap-3 flex-wrap">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".txt,.md,.json,.csv,.markdown"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-accent-500 text-white rounded-lg text-sm font-medium hover:bg-accent-600 transition-all whitespace-nowrap"
+                >
+                  <i className="ri-upload-cloud-2-line text-lg"></i>
+                  上传文档
+                </button>
+                <span className="text-xs text-foreground-500">支持 .txt / .md / .json / .csv，上传后自动读取内容填入，无需手填</span>
+              </div>
+              {uploadStatus && (
+                <p className="mt-2 text-xs text-primary-600 flex items-center gap-1">
+                  <i className="ri-checkbox-circle-line"></i>
+                  {uploadStatus}
+                </p>
+              )}
             </div>
 
             <div className="p-5 space-y-4">

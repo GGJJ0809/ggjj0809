@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const menuItems = [
   { name: "仪表盘", path: "/admin", icon: "ri-dashboard-line" },
@@ -16,6 +16,7 @@ const menuItems = [
   { name: "专栏管理", path: "/admin/columns", icon: "ri-stack-line" },
   { name: "AI 模型", path: "/admin/ai-models", icon: "ri-cpu-line" },
   { name: "活动管理", path: "/admin/activities", icon: "ri-calendar-event-line" },
+  { name: "测评管理", path: "/admin/assessments", icon: "ri-file-chart-line" },
   { name: "会员管理", path: "/admin/members", icon: "ri-vip-crown-line" },
   { name: "积分管理", path: "/admin/points", icon: "ri-coin-line" },
   { name: "直播管理", path: "/admin/live", icon: "ri-live-line" },
@@ -42,11 +43,18 @@ function OrbitLogo({ className = "" }: { className?: string }) {
 
 export default function AdminLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isActive = (path: string) => {
     if (path === "/admin") return location.pathname === "/admin";
     return location.pathname.startsWith(path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_username");
+    navigate("/admin/login", { replace: true });
   };
 
   return (
@@ -105,8 +113,15 @@ export default function AdminLayout() {
           })()}
         </nav>
 
-        {/* Collapse Toggle */}
-        <div className="p-3 border-t border-white/10">
+        {/* Collapse Toggle + Logout */}
+        <div className="p-3 border-t border-white/10 space-y-2">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-foreground-400 hover:text-white hover:bg-white/10 transition-all text-sm"
+          >
+            <i className="ri-logout-box-r-line text-lg"></i>
+            {!sidebarCollapsed && <span className="whitespace-nowrap">退出登录</span>}
+          </button>
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-foreground-400 hover:text-white hover:bg-white/10 transition-all text-sm"

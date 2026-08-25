@@ -15,8 +15,12 @@ export default function KnowledgeProductRenderer({ config, isPreview = false }: 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        let query = supabase.from("courses").select("*").eq("status", "active").order("created_at", { ascending: false });
-        if (config.productIds && config.productIds.length > 0) query = query.in("id", config.productIds);
+        let query = supabase.from("courses").select("*").order("created_at", { ascending: false });
+        if (config.productIds && config.productIds.length > 0) {
+          query = query.in("id", config.productIds);
+        } else {
+          query = query.eq("status", "active");
+        }
         query = query.limit(config.displayCount || 4);
         const { data } = await query;
         if (data) setCourses(data);

@@ -14,8 +14,12 @@ export default function DistributionProductRenderer({ config, isPreview = false 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let query = supabase.from("product_items").select("*").eq("status", "active");
-        if (config.productIds && config.productIds.length > 0) query = query.in("id", config.productIds);
+        let query = supabase.from("product_items").select("*");
+        if (config.productIds && config.productIds.length > 0) {
+          query = query.in("id", config.productIds);
+        } else {
+          query = query.eq("status", "active");
+        }
         query = query.limit(config.displayCount || 4);
         const { data } = await query;
         if (data) setProducts(data);

@@ -12,6 +12,13 @@ export default function SettingsAdmin() {
       available: true,
     },
     {
+      icon: "ri-user-settings-line",
+      title: "账号与登录配置",
+      desc: "登录方式、邮箱服务与短信验证码配置",
+      path: "/admin/settings/auth-config",
+      available: true,
+    },
+    {
       icon: "ri-image-line",
       title: "Banner 配置",
       desc: "管理首页轮播图和广告位",

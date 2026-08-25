@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import ImageUploader from "@/components/feature/ImageUploader";
+import TextareaImageInserter from "./components/TextareaImageInserter";
 
 /* ---------- types ---------- */
 interface AssetRow {
@@ -249,7 +251,7 @@ export default function AssetsAdmin() {
         </div>
         <div className="bg-white rounded-xl border border-background-200/70 p-6">
           {a.asset_type === "text" && (
-            <div className="prose prose-sm max-w-none text-foreground-700 whitespace-pre-wrap">{a.content_text || "（无内容）"}</div>
+            <div className="prose prose-sm max-w-none text-foreground-700 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: a.content_text || "（无内容）" }} />
           )}
           {a.asset_type === "audio" && (
             <div className="space-y-3">
@@ -425,10 +427,10 @@ export default function AssetsAdmin() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-foreground-500 mb-1">所属章节 <span className="text-red-400">*</span></label>
+                  <label className="block text-xs font-medium text-foreground-500 mb-1">所属章节</label>
                   <select value={form.chapter_id} onChange={(e) => setForm((f) => ({ ...f, chapter_id: e.target.value }))}
                     className="w-full px-3 py-2 rounded-lg border border-background-200/70 bg-background-50 text-sm text-foreground-800 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400">
-                    <option value="">-- 请选择章节 --</option>
+                    <option value="">-- 不分配（稍后在课程里创建） --</option>
                     {(form.category_id ? chapters.filter((ch) => ch.category_id === null || ch.category_id === Number(form.category_id)) : chapters).map((ch) => (
                       <option key={ch.id} value={ch.id}>{ch.name}</option>
                     ))}
@@ -436,10 +438,14 @@ export default function AssetsAdmin() {
                 </div>
               </div>
               {form.asset_type === "text" && (
-                <div>
-                  <label className="block text-xs font-medium text-foreground-500 mb-1">正文（富文本）</label>
-                  <textarea value={form.content_text} onChange={(e) => setForm((f) => ({ ...f, content_text: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-background-200/70 bg-background-50 text-sm h-40 resize-none font-mono" placeholder="在此输入图文内容，支持 HTML 格式..." />
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-foreground-500 mb-1">正文（HTML 格式）</label>
+                    <TextareaImageInserter
+                      value={form.content_text}
+                      onChange={(val) => setForm((f) => ({ ...f, content_text: val }))}
+                    />
+                  </div>
                 </div>
               )}
               {form.asset_type === "audio" && (
@@ -470,9 +476,13 @@ export default function AssetsAdmin() {
                         className="w-full px-3 py-2 rounded-lg border border-background-200/70 bg-background-50 text-sm" min="0" placeholder="如：3600（60分钟）" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-foreground-500 mb-1">封面图 URL</label>
-                      <input type="text" value={form.video_cover} onChange={(e) => setForm((f) => ({ ...f, video_cover: e.target.value }))}
-                        className="w-full px-3 py-2 rounded-lg border border-background-200/70 bg-background-50 text-sm" placeholder="https://..." />
+                      <label className="block text-xs font-medium text-foreground-500 mb-1">视频封面</label>
+                      <ImageUploader
+                        value={form.video_cover}
+                        onChange={(url) => setForm((f) => ({ ...f, video_cover: url }))}
+                        label=""
+                        placeholder="https://..."
+                      />
                     </div>
                   </div>
                 </div>

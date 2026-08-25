@@ -31,6 +31,9 @@ import OrdersAdmin from "@/pages/admin/Orders/page";
 import AffiliatesAdmin from "@/pages/admin/Affiliates/page";
 import SettingsAdmin from "@/pages/admin/Settings/page";
 import PaymentConfig from "@/pages/admin/Settings/PaymentConfig/page";
+import AuthConfig from "@/pages/admin/Settings/AuthConfig/page";
+import AdminLogin from "@/pages/admin/Login/page";
+import AdminGuard from "@/components/feature/AdminGuard";
 import AssetsAdmin from "@/pages/admin/Assets/page";
 import CategoriesAdmin from "@/pages/admin/Categories/page";
 import ChaptersAdmin from "@/pages/admin/Chapters/page";
@@ -51,8 +54,16 @@ const routes: RouteObject[] = [
     element: <Home />,
   },
   {
+    path: "/admin/login",
+    element: <AdminLogin />,
+  },
+  {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <AdminGuard>
+        <AdminLayout />
+      </AdminGuard>
+    ),
     children: [
       { index: true, element: <Dashboard /> },
       { path: "design", element: <HomepageEditor /> },
@@ -73,6 +84,7 @@ const routes: RouteObject[] = [
       { path: "affiliates", element: <AffiliatesAdmin /> },
       { path: "settings", element: <SettingsAdmin /> },
       { path: "settings/payment", element: <PaymentConfig /> },
+      { path: "settings/auth-config", element: <AuthConfig /> },
       { path: "agents", element: <AgentsAdmin /> },
       { path: "agents/create", element: <AgentTypeSelect /> },
       { path: "agents/create/consultant", element: <ConsultantAgentForm /> },

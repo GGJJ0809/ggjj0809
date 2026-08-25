@@ -112,9 +112,29 @@ export default function HomepageEditor() {
       sort_order: sections.length,
       enabled: true,
     };
-    const updated = [...sections, newSection];
+
+    let updated: SectionConfig[];
+    let newIndex: number;
+
+    if (selectedIndex !== null) {
+      // 插入到选中组件的下方
+      updated = [
+        ...sections.slice(0, selectedIndex + 1),
+        newSection,
+        ...sections.slice(selectedIndex + 1),
+      ];
+      newIndex = selectedIndex + 1;
+    } else {
+      // 没有选中任何组件，放到末尾
+      updated = [...sections, newSection];
+      newIndex = updated.length - 1;
+    }
+
+    // 重新排序号
+    updated = updated.map((s, i) => ({ ...s, sort_order: i }));
+
     setSections(updated);
-    setSelectedIndex(updated.length - 1);
+    setSelectedIndex(newIndex);
     setActiveTab("component");
   };
 

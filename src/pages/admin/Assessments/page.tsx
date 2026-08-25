@@ -579,7 +579,7 @@ export default function AssessmentsAdmin() {
       {toast && <div className="fixed top-4 right-4 z-[60] px-4 py-2 rounded-lg bg-primary-500 text-white text-sm shadow-lg">{toast}</div>}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-foreground-950">Q库评管理</h1>
+          <h1 className="text-2xl font-heading font-bold text-foreground-950">测评管理</h1>
           <p className="mt-1 text-sm text-foreground-500">管理测评题库、匹配规则和结果模板</p>
         </div>
         <button onClick={openCreate} className="px-4 py-2 rounded-full bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-all whitespace-nowrap">

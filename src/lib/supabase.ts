@@ -1,18 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
-import { localDb } from './localDb';
+import { createClient } from "@supabase/supabase-js";
 
-function isElectron() {
-  return typeof window !== 'undefined' && !!(window as any).electronAPI;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error("Supabase URL or Anon Key is missing. Please check your environment variables.");
 }
 
-export const supabase = isElectron()
-  ? (localDb as any)
-  : createClient(
-      'http://114.215.190.225',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.b69xNoiP31pDuwLvkOQOV6MpxVHYbRq6XuGpi9_Cqpc',
-      {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.b69xNoiP31pDuwLvkOQOV6MpxVHYbRq6XuGpi9_Cqpc'
-        }
-      }
-    );
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import AssetPicker from "./components/AssetPicker";
+import ImageUploader from "@/components/feature/ImageUploader";
 import type { AssetPickerResult } from "./components/AssetPicker";
 
 /* ---------- types ---------- */
@@ -1020,12 +1021,11 @@ export default function CoursesAdmin() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-foreground-500 mb-1">封面图片 URL</label>
-                    <input
-                      type="text"
+                    <label className="block text-xs font-medium text-foreground-500 mb-1">封面图片</label>
+                    <ImageUploader
                       value={form.cover_image}
-                      onChange={(e) => setForm((f) => ({ ...f, cover_image: e.target.value }))}
-                      className="w-full px-3 py-2 rounded-lg border border-background-200/70 bg-background-50 text-sm"
+                      onChange={(url) => setForm((f) => ({ ...f, cover_image: url }))}
+                      label=""
                       placeholder="https://..."
                     />
                   </div>
