@@ -27,7 +27,8 @@ jobs:
             Write-Host "=== RUN pr_agent $tool ==="
             docker run --rm `
               --entrypoint python `
-              -e GITHUB_TOKEN="$env:GITHUB_TOKEN" `
+              -e GITHUB.USER_TOKEN="$env:GITHUB_TOKEN" `
+              -e config.deployment_type=github_action `
               -e config.model=ollama/qwen2.5-coder:7b `
               -e config.custom_model_max_tokens=8192 `
               -e OLLAMA.API_BASE=http://host.docker.internal:11434 `
