@@ -1,2 +1,2 @@
-// e2e-fresh.js rev3
-console.log('rev3')
+// e2e-fresh.js rev4
+console.log('rev4')
