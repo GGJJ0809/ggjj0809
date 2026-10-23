@@ -1,0 +1,37 @@
+name: PR Agent (Local Ollama)
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+  issue_comment:
+    if: ${{ github.event.sender.type != 'Bot' }}
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  pr_agent_job:
+    if: ${{ github.event.sender.type != 'Bot' }}
+    runs-on: self-hosted
+    name: Run PR Agent on PR open / update, respond to comments
+    steps:
+      - name: PR Agent action step
+        id: pragent
+        uses: the-pr-agent/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Local Ollama model served on this self-hosted host.
+          # Inside the action container, reach the host via host.docker.internal.
+          config.model: "ollama/qwen2.5-coder:7b"
+          config.fallback_models: '["ollama/qwen2.5-coder:7b"]'
+          config.custom_model_max_tokens: "8192"
+          OLLAMA.API_BASE: "http://host.docker.internal:11434"
+          # Local CPU/GPU model is slow; give it room.
+          config.ai_timeout: "600"
+          # Auto tools
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "true"
+          github_action_config.pr_actions: '["opened", "reopened", "ready_for_review"]'
