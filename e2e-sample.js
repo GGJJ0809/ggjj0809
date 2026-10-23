@@ -1,4 +1,4 @@
-// Fresh E2E PR self-test file rev2
-function sum(a,b){ return a+b }
-console.log(sum(1,2))
-// rev2: fire synchronize on clean session 10:53:25
+// Fresh E2E PR self-test file rev3
+function mul(a,b){ return a*b }
+console.log(mul(2,3))
+// rev3: fire synchronize after stable session 11:00:53
