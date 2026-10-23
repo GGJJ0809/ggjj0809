@@ -23,17 +23,15 @@ jobs:
         run: |
           $prUrl = "${{ github.event.pull_request.html_url }}"
           if (-not $prUrl) { Write-Host "no PR url"; exit 0 }
-          $args = @(
-            'run','--rm',
-            '-e','GITHUB_TOKEN=' + $env:GITHUB_TOKEN,
-            '-e','config.model=ollama/qwen2.5-coder:7b',
-            '-e','config.custom_model_max_tokens=8192',
-            '-e','OLLAMA.API_BASE=http://host.docker.internal:11434',
-            '-e','config.ai_timeout=600',
-            'pragent/pr-agent:github_action'
-          )
           foreach ($tool in @('/describe','/review','/improve')) {
             Write-Host "=== RUN pr_agent $tool ==="
-            & docker @args pr_agent $tool --pr_url=$prUrl
+            docker run --rm `
+              -e GITHUB_TOKEN="$env:GITHUB_TOKEN" `
+              -e config.model=ollama/qwen2.5-coder:7b `
+              -e config.custom_model_max_tokens=8192 `
+              -e OLLAMA.API_BASE=http://host.docker.internal:11434 `
+              -e config.ai_timeout=600 `
+              pragent/pr-agent:github_action `
+              pr_agent $tool --pr_url="$prUrl"
             Write-Host "exit=$LASTEXITCODE"
           }
