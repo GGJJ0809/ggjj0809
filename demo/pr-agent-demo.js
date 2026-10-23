@@ -10,3 +10,4 @@ function calcTotal(prices, taxRate) {
 }
 const list = [10, 20, 30]
 console.log(calcTotal(list, 0.1))
+// revision: trigger synchronize
